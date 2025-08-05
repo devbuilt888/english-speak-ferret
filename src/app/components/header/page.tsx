@@ -38,10 +38,8 @@ export default function Header() {
           </span>
         </Link>
 
-
-
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex space-x-6">
+        {/* Desktop Nav - Hidden for now */}
+        {/* <nav className="hidden md:flex space-x-6">
           {navItems.map((item) => (
             <Link
               key={item.name}
@@ -54,20 +52,20 @@ export default function Header() {
               {item.name}
             </Link>
           ))}
-        </nav>
+        </nav> */}
 
-        {/* Mobile Menu Button */}
-        <button
+        {/* Mobile Menu Button - Hidden for now */}
+        {/* <button
           className="md:hidden text-2xl text-purple-600"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
           {menuOpen ? <HiOutlineX /> : <HiOutlineMenu />}
-        </button>
+        </button> */}
       </div>
 
-      {/* Mobile Nav Menu */}
-      {menuOpen && (
+      {/* Mobile Nav Menu - Hidden for now */}
+      {/* {menuOpen && (
         <div className="md:hidden bg-white border-t shadow-md">
           <nav className="px-4 py-4 space-y-2">
             {navItems.map((item) => (
@@ -85,7 +83,7 @@ export default function Header() {
             ))}
           </nav>
         </div>
-      )}
+      )} */}
     </header>
   );
 }

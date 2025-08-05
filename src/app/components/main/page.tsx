@@ -27,18 +27,18 @@ export default function MainPage() {
       <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-pink-500/20 rounded-full blur-2xl animate-pulse z-10" />
 
       {/* Main Content */}
-      <div className="h-full  overflow-y-scroll scrollbar-hidden  px-4 py-6 sm:px-6 sm:py-8 space-y-10 z-10 relative">
+      <div className="relative z-20 p-6 space-y-8">
         
         {/* Overlayed Section - Logo + Title + Desc */}
         <div className="z-20 relative text-center space-y-4">
-          {/* Logo */}
-          <div className="flex justify-center mb-6">
+          {/* Logo - Hidden for now */}
+          {/* <div className="flex justify-center mb-6">
             <img
               src="/speakgrade_logo.png"
               alt="SpeakGrade Logo"
               className="h-20 w-20 sm:h-24 sm:w-24 object-cover rounded-full border-4 border-white/20 shadow-xl transition-transform duration-300 hover:scale-110 animate__animated animate__fadeIn animate__infinite animate__slow"
             />
-          </div>
+          </div> */}
 
           {/* Title + Description */}
           <h1 className="text-4xl sm:text-5xl font-extrabold">
@@ -80,9 +80,14 @@ export default function MainPage() {
           ))}
         </div>
 
-        {/* ElevenLabs Agent */}
+        {/* ElevenLabs Agent - Improved mobile positioning */}
         <div
-          className="z-20 relative"
+          className="relative z-50 w-full"
+          style={{ 
+            position: 'relative',
+            zIndex: 9999,
+            minHeight: '60px'
+          }}
           dangerouslySetInnerHTML={{
             __html: `<elevenlabs-convai agent-id="agent_4501k1tk0ntff8rv8et3d804erbq"></elevenlabs-convai>`,
           }}
@@ -97,10 +102,8 @@ export default function MainPage() {
 
       {/* Welcome Modal */}
       {showPopup && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="relative max-w-3xl w-full p-4">
-            <WelcomeTestPage onClose={handleClose} />
-          </div>
+        <div className="absolute inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/50">
+          <WelcomeTestPage onClose={handleClose} />
         </div>
       )}
     </div>

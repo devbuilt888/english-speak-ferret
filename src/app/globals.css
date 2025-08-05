@@ -156,3 +156,33 @@ body {
 }
 
 /* ===== /Hide scrollbar while keeping scroll functionality===== */
+
+/* ===== ElevenLabs Widget Mobile Fixes ===== */
+elevenlabs-convai {
+  position: relative !important;
+  z-index: 9999 !important;
+  display: block !important;
+  width: 100% !important;
+  min-height: 60px !important;
+}
+
+/* Ensure the widget is always visible on mobile */
+@media (max-width: 768px) {
+  elevenlabs-convai {
+    position: relative !important;
+    z-index: 9999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    margin: 20px 0 !important;
+  }
+  
+  /* Override any potential hiding styles */
+  elevenlabs-convai * {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ===== /ElevenLabs Widget Mobile Fixes ===== */
