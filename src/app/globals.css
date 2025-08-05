@@ -163,7 +163,18 @@ elevenlabs-convai {
   z-index: 9999 !important;
   display: block !important;
   width: 100% !important;
-  min-height: 60px !important;
+  min-width: 300px !important;
+  min-height: 400px !important;
+  height: auto !important;
+}
+
+/* Ensure the widget's iframe has proper dimensions */
+elevenlabs-convai iframe {
+  width: 100% !important;
+  min-width: 300px !important;
+  min-height: 400px !important;
+  height: 400px !important;
+  border: none !important;
 }
 
 /* Ensure the widget is always visible on mobile */
@@ -176,6 +187,19 @@ elevenlabs-convai {
     opacity: 1 !important;
     transform: none !important;
     margin: 20px 0 !important;
+    width: 100% !important;
+    min-width: 280px !important;
+    min-height: 350px !important;
+    height: auto !important;
+  }
+  
+  /* Mobile iframe sizing */
+  elevenlabs-convai iframe {
+    width: 100% !important;
+    min-width: 280px !important;
+    min-height: 350px !important;
+    height: 350px !important;
+    border: none !important;
   }
   
   /* Override any potential hiding styles */

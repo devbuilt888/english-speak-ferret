@@ -82,11 +82,10 @@ export default function MainPage() {
 
         {/* ElevenLabs Agent - Improved mobile positioning */}
         <div
-          className="relative z-50 w-full"
+          className="relative z-50 w-full min-h-[400px] py-4"
           style={{ 
             position: 'relative',
-            zIndex: 9999,
-            minHeight: '60px'
+            zIndex: 9999
           }}
           dangerouslySetInnerHTML={{
             __html: `<elevenlabs-convai agent-id="agent_4501k1tk0ntff8rv8et3d804erbq"></elevenlabs-convai>`,
