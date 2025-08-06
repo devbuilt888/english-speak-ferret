@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Snowfall from './components/snowfall/page';
 import Loader from './components/loader/page';
 import MainPage from './components/main/page';
-import Header from './components/header/page';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -30,7 +29,6 @@ export default function Home() {
 
       {/* 🔵 Foreground - Scrollable Content */}
       <div className="relative z-10 w-full h-full ">
-        <Header />
         <main className="w-full max-w-6xl mx-auto px-4 py-6">
           <MainPage />
         </main>

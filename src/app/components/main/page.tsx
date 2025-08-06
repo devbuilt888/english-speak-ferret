@@ -1,25 +1,91 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Script from 'next/script';
-import WelcomeTestPage from '../welcome/WelcomeTest';
+import Image from 'next/image';
 import 'animate.css/animate.min.css';
 
+interface TranscriptEntry {
+  type: 'user' | 'agent';
+  text: string;
+  timestamp: Date;
+}
+
 export default function MainPage() {
-  const [showPopup, setShowPopup] = useState(true);
-  const handleClose = () => setShowPopup(false);
+  const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
+  const [isCallActive, setIsCallActive] = useState(false);
+
+  // Add event listeners for transcript functionality
+  useEffect(() => {
+    const handleWidgetEvents = () => {
+      const widget = document.querySelector('elevenlabs-convai');
+      
+      if (widget) {
+        // Listen for widget initialization
+        widget.addEventListener('elevenlabs-convai:call', (event: any) => {
+          console.log('Widget call started');
+          
+          // Enable transcript events in the widget configuration
+          if (event.detail && event.detail.config) {
+            event.detail.config.enableTranscript = true;
+            event.detail.config.enableUserTranscript = true;
+            event.detail.config.enableAgentResponse = true;
+          }
+        });
+
+        // Listen for user transcript events
+        widget.addEventListener('elevenlabs-convai:user_transcript', (event: any) => {
+          console.log('User said:', event.detail.transcript);
+          setTranscript(prev => [...prev, {
+            type: 'user',
+            text: event.detail.transcript || 'User spoke...',
+            timestamp: new Date()
+          }]);
+        });
+
+        // Listen for agent response events
+        widget.addEventListener('elevenlabs-convai:agent_response', (event: any) => {
+          console.log('Agent said:', event.detail.response);
+          setTranscript(prev => [...prev, {
+            type: 'agent',
+            text: event.detail.response || 'Agent responded...',
+            timestamp: new Date()
+          }]);
+        });
+
+        // Listen for conversation events
+        widget.addEventListener('elevenlabs-convai:conversation_started', (event: any) => {
+          console.log('Conversation started');
+          setIsCallActive(true);
+          setTranscript([]);
+        });
+
+        widget.addEventListener('elevenlabs-convai:conversation_ended', (event: any) => {
+          console.log('Conversation ended');
+          setIsCallActive(false);
+        });
+      }
+    };
+
+    // Wait for the widget to be loaded
+    const timer = setTimeout(handleWidgetEvents, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="relative w-full max-w-6xl h-[80vh] sm:h-[83vh] mx-auto pb-20 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white rounded-2xl overflow-y-scroll scrollbar-hidden shadow-2xl border border-white/10">
+    <div className="relative w-full max-w-6xl h-[80vh] sm:h-[83vh] mx-auto pb-20 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white rounded-2xl overflow-y-scroll scrollbar-hidden shadow-2xl border border-white/10 main-content-container">
       
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full z-0">
-        <img
+        <Image
           src="/bot-with-man.avif"
           alt="SpeakGrade Background"
-          className="w-100 h-100 object-cover sm:w-full sm:h-full animate__animated animate__fadeIn"
+          fill
+          className="object-cover animate__animated animate__fadeIn"
+          priority
         />
-        <div className="absolute inset-0 bg-black/70" /> {/* Optional dark overlay for readability */}
+        <div className="absolute inset-0 bg-black/85" /> {/* Darker overlay for better text readability */}
       </div>
 
       {/* Glowing Background Blur */}
@@ -27,84 +93,78 @@ export default function MainPage() {
       <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-pink-500/20 rounded-full blur-2xl animate-pulse z-10" />
 
       {/* Main Content */}
-      <div className="relative z-20 p-6 space-y-8">
+      <div className="relative z-20 p-6 flex flex-col items-center justify-center text-center min-h-full">
         
-        {/* Overlayed Section - Logo + Title + Desc */}
-        <div className="z-20 relative text-center space-y-4">
-          {/* Logo - Hidden for now */}
-          {/* <div className="flex justify-center mb-6">
-            <img
-              src="/speakgrade_logo.png"
-              alt="SpeakGrade Logo"
-              className="h-20 w-20 sm:h-24 sm:w-24 object-cover rounded-full border-4 border-white/20 shadow-xl transition-transform duration-300 hover:scale-110 animate__animated animate__fadeIn animate__infinite animate__slow"
-            />
-          </div> */}
-
-          {/* Title + Description */}
-          <h1 className="text-4xl sm:text-5xl font-extrabold">
-            🚀 SpeakGrade - AI English Fluency Guide
+        {/* Text content container with relative positioning for widget anchor */}
+        <div className="relative z-20 text-center max-w-4xl mx-auto pt-56">
+          {/* Main Title */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight robotic-font mb-2">
+            Have a quick conversation in English with a tutor to evaluate your level
           </h1>
-          <p className="text-gray-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-            Elevate your spoken English with real-time AI assessment. Speak naturally, and get instant, intelligent feedback
-            on fluency, grammar, vocabulary, and clarity — all in just 3 minutes.
-          </p>
+          
+          {/* Instructions */}
+          <div className="space-y-1 mb-1">
+            <p className="text-lg sm:text-xl text-cyan-400 font-medium robotic-font">
+              1. Press the button below, then accept the terms.
+            </p>
+            <p className="text-lg sm:text-xl text-green-400 font-medium robotic-font" id="last-instruction">
+              2. press the phone icon again to start the call
+            </p>
+          </div>
+
+          {/* ElevenLabs Agent - Absolute positioned right below text */}
+          <div
+            className="absolute left-1/2 transform -translate-x-1/2 z-50 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg min-h-[300px] sm:min-h-[350px] md:min-h-[400px]"
+            style={{ 
+              top: '69%',
+              marginTop: '-10px',
+              zIndex: 9999
+            }}
+            dangerouslySetInnerHTML={{
+              __html: `<elevenlabs-convai 
+                agent-id="agent_4501k1tk0ntff8rv8et3d804erbq"
+                variant="expanded"
+                avatar-image-url="/speakgrade_logo.png"
+                avatar-orb-color-1="#00FFFF"
+                avatar-orb-color-2="#9333EA"
+                action-text="Start English Test"
+                start-call-text="Begin Voice Test"
+                end-call-text="End Test"
+                expand-text="Open Voice Tutor"
+                listening-text="Listening to you..."
+                speaking-text="Manolo is speaking..."
+                override-language="en"
+              ></elevenlabs-convai>`,
+            }}
+          />
+
+          {/* Load ElevenLabs Widget Script */}
+          <Script
+            src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+            strategy="afterInteractive"
+            onLoad={() => {
+              console.log('ElevenLabs widget script loaded');
+            }}
+          />
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 z-20">
-          {[
-            {
-              title: '🎙 Real-Time Speaking',
-              desc: 'Answer dynamic questions using your microphone. Our AI listens and evaluates as you speak.',
-            },
-            {
-              title: '📊 Smart Feedback',
-              desc: 'Instant tips on grammar, sentence structure, pronunciation, and how to improve them.',
-            },
-            {
-              title: '💡 Vocabulary Suggestions',
-              desc: 'Used a weak or wrong word? Get real-time alternatives and examples to boost your vocab.',
-            },
-            {
-              title: '⏱ Lightning Fast',
-              desc: 'The entire test lasts only 3 minutes — speak confidently and get results instantly.',
-            },
-          ].map((feature, idx) => (
-            <div
-              key={idx}
-              className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg hover:scale-[1.02] hover:bg-white/20 transition-all duration-300"
-            >
-              <h2 className="text-xl font-bold">{feature.title}</h2>
-              <p className="mt-2 text-gray-300 text-sm sm:text-base">{feature.desc}</p>
+        {/* Transcript Display */}
+        {isCallActive && transcript.length > 0 && (
+          <div className="fixed bottom-4 right-4 w-80 max-h-60 bg-black/80 backdrop-blur-sm rounded-lg p-4 border border-white/20 z-50 overflow-y-auto scrollbar-hidden">
+            <div className="text-sm text-white/70 mb-2 robotic-font">Live Transcript</div>
+            <div className="space-y-2">
+              {transcript.map((entry, index) => (
+                <div key={index} className={`text-sm ${entry.type === 'user' ? 'text-cyan-400' : 'text-green-400'}`}>
+                  <span className="font-semibold robotic-font">
+                    {entry.type === 'user' ? 'You:' : 'Manolo:'}
+                  </span>
+                  <span className="ml-2">{entry.text}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {/* ElevenLabs Agent - Improved mobile positioning */}
-        <div
-          className="relative z-50 w-full min-h-[400px] py-4"
-          style={{ 
-            position: 'relative',
-            zIndex: 9999
-          }}
-          dangerouslySetInnerHTML={{
-            __html: `<elevenlabs-convai agent-id="agent_4501k1tk0ntff8rv8et3d804erbq"></elevenlabs-convai>`,
-          }}
-        />
-
-        {/* Load ElevenLabs Widget Script */}
-        <Script
-          src="https://unpkg.com/@elevenlabs/convai-widget-embed"
-          strategy="afterInteractive"
-        />
+          </div>
+        )}
       </div>
-
-      {/* Welcome Modal */}
-      {showPopup && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/50">
-          <WelcomeTestPage onClose={handleClose} />
-        </div>
-      )}
     </div>
   );
 }
