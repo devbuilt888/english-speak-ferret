@@ -11,6 +11,18 @@ interface TranscriptEntry {
   timestamp: Date;
 }
 
+interface ElevenLabsEvent extends Event {
+  detail?: {
+    config?: {
+      enableTranscript?: boolean;
+      enableUserTranscript?: boolean;
+      enableAgentResponse?: boolean;
+    };
+    transcript?: string;
+    response?: string;
+  };
+}
+
 export default function MainPage() {
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [isCallActive, setIsCallActive] = useState(false);
@@ -22,7 +34,7 @@ export default function MainPage() {
       
       if (widget) {
         // Listen for widget initialization
-        widget.addEventListener('elevenlabs-convai:call', (event: any) => {
+        widget.addEventListener('elevenlabs-convai:call', (event: ElevenLabsEvent) => {
           console.log('Widget call started');
           
           // Enable transcript events in the widget configuration
@@ -34,33 +46,33 @@ export default function MainPage() {
         });
 
         // Listen for user transcript events
-        widget.addEventListener('elevenlabs-convai:user_transcript', (event: any) => {
-          console.log('User said:', event.detail.transcript);
+        widget.addEventListener('elevenlabs-convai:user_transcript', (event: ElevenLabsEvent) => {
+          console.log('User said:', event.detail?.transcript);
           setTranscript(prev => [...prev, {
             type: 'user',
-            text: event.detail.transcript || 'User spoke...',
+            text: event.detail?.transcript || 'User spoke...',
             timestamp: new Date()
           }]);
         });
 
         // Listen for agent response events
-        widget.addEventListener('elevenlabs-convai:agent_response', (event: any) => {
-          console.log('Agent said:', event.detail.response);
+        widget.addEventListener('elevenlabs-convai:agent_response', (event: ElevenLabsEvent) => {
+          console.log('Agent said:', event.detail?.response);
           setTranscript(prev => [...prev, {
             type: 'agent',
-            text: event.detail.response || 'Agent responded...',
+            text: event.detail?.response || 'Agent responded...',
             timestamp: new Date()
           }]);
         });
 
         // Listen for conversation events
-        widget.addEventListener('elevenlabs-convai:conversation_started', (event: any) => {
+        widget.addEventListener('elevenlabs-convai:conversation_started', () => {
           console.log('Conversation started');
           setIsCallActive(true);
           setTranscript([]);
         });
 
-        widget.addEventListener('elevenlabs-convai:conversation_ended', (event: any) => {
+        widget.addEventListener('elevenlabs-convai:conversation_ended', () => {
           console.log('Conversation ended');
           setIsCallActive(false);
         });
