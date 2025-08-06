@@ -236,6 +236,22 @@ elevenlabs-convai > * {
   }
 }
 
+/* Increase height for screens 770px and below */
+@media (max-width: 770px) {
+  elevenlabs-convai {
+    min-height: 500px !important;
+  }
+  
+  elevenlabs-convai iframe {
+    min-height: 500px !important;
+    height: 500px !important;
+  }
+  
+  .main-content-container {
+    padding-bottom: 550px !important;
+  }
+}
+
 /* Ensure the widget is always visible on mobile */
 @media (max-width: 768px) {
   elevenlabs-convai {
